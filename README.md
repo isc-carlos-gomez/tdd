@@ -1,2 +1,2 @@
-# tdd
-Repository to practice TDD.
+# TDD
+Personal repository to practice TDD.
