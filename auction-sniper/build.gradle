@@ -1,6 +1,7 @@
 plugins {
     id 'java-library'
     id 'eclipse'
+    id 'idea'
 }
 
 repositories {
@@ -16,7 +17,7 @@ sourceSets {
 
 configurations {
     acceptanceImplementation.extendsFrom testImplementation
-    acceptanceRuntimeOnly.extendsFrom testRuntimeOnly
+    acceptanceRuntime.extendsFrom testRuntime
 }
 
 dependencies {
@@ -61,5 +62,12 @@ eclipse {
         downloadJavadoc = true
         downloadSources = true
         plusConfigurations += [ configurations.acceptanceRuntime ]
+    }
+}
+
+idea {
+    module {
+        testSourceDirs += sourceSets.acceptance.java.srcDirs
+        testResourceDirs += sourceSets.acceptance.resources.srcDirs
     }
 }
