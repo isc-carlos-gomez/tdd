@@ -17,17 +17,18 @@ sourceSets {
 
 configurations {
     acceptanceImplementation.extendsFrom testImplementation
-    acceptanceRuntime.extendsFrom testRuntime
+    acceptanceRuntimeOnly.extendsFrom testRuntimeOnly
 }
 
 dependencies {
     implementation 'org.igniterealtime.smack:smack:3.2.1'
     implementation 'org.igniterealtime.smack:smackx:3.2.1'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.3.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.5.2'
+    testImplementation 'org.mockito:mockito-core:3.1.0'
     testImplementation 'org.hamcrest:hamcrest-all:1.3'
-    testImplementation 'org.mockito:mockito-core:+'
-    acceptanceCompile 'com.googlecode.windowlicker:windowlicker-swing:r268'
+
+    acceptanceImplementation 'com.googlecode.windowlicker:windowlicker-swing:r268'
 }
 
 def printTestResult = {desc, result ->
@@ -62,13 +63,6 @@ eclipse {
     classpath {
         downloadJavadoc = true
         downloadSources = true
-        plusConfigurations += [ configurations.acceptanceRuntime ]
-    }
-}
-
-idea {
-    module {
-        testSourceDirs += sourceSets.acceptance.java.srcDirs
-        testResourceDirs += sourceSets.acceptance.resources.srcDirs
+        plusConfigurations += [ configurations.acceptanceRuntimeClasspath ]
     }
 }
