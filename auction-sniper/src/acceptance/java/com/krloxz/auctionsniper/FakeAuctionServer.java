@@ -11,51 +11,49 @@ import org.jivesoftware.smack.packet.Message;
  */
 public class FakeAuctionServer {
 
-    private static final String XMPP_HOSTNAME = "localhost";
-    private static final String ITEM_ID_AS_LOGIN = "auction-%s";
-    private static final String AUCTION_RESOURCE = "Auction";
-    private static final String AUCTION_PASSWORD = "auction";
+  private static final String XMPP_HOSTNAME = "localhost";
+  private static final String ITEM_ID_AS_LOGIN = "auction-%s";
+  private static final String AUCTION_RESOURCE = "Auction";
+  private static final String AUCTION_PASSWORD = "auction";
 
-    private final String itemId;
-    private final XMPPConnection connection;
-    private final SingleMessageListener messageListener;
-    private Chat currentChat;
+  private final String itemId;
+  private final XMPPConnection connection;
+  private final SingleMessageListener messageListener;
+  private Chat currentChat;
 
-    public FakeAuctionServer(final String itemId) {
-        this.itemId = itemId;
-        this.connection = new XMPPConnection(XMPP_HOSTNAME);
-        this.messageListener = new SingleMessageListener();
-    }
+  public FakeAuctionServer(final String itemId) {
+    this.itemId = itemId;
+    this.connection = new XMPPConnection(XMPP_HOSTNAME);
+    this.messageListener = new SingleMessageListener();
+  }
 
-    public void startSellingItem() throws XMPPException {
-        this.connection.connect();
-        this.connection.login(String.format(ITEM_ID_AS_LOGIN, this.itemId),
-                AUCTION_PASSWORD, AUCTION_RESOURCE);
-        this.connection.getChatManager().addChatListener(
-                new ChatManagerListener() {
+  public void startSellingItem() throws XMPPException {
+    this.connection.connect();
+    this.connection.login(String.format(ITEM_ID_AS_LOGIN, this.itemId), AUCTION_PASSWORD, AUCTION_RESOURCE);
+    this.connection.getChatManager().addChatListener(new ChatManagerListener() {
 
-                    @Override
-                    public void chatCreated(final Chat chat, final boolean createdLocally) {
-                        FakeAuctionServer.this.currentChat = chat;
-                        chat.addMessageListener(FakeAuctionServer.this.messageListener);
-                    }
-                });
-    }
+      @Override
+      public void chatCreated(final Chat chat, final boolean createdLocally) {
+        FakeAuctionServer.this.currentChat = chat;
+        chat.addMessageListener(FakeAuctionServer.this.messageListener);
+      }
+    });
+  }
 
-    public void hasReceivedJoinRequestFromSniper() throws InterruptedException {
-        this.messageListener.receivesAMessage();
-    }
+  public void hasReceivedJoinRequestFromSniper() throws InterruptedException {
+    this.messageListener.receivesAMessage();
+  }
 
-    public void announceClosed() throws XMPPException {
-        this.currentChat.sendMessage(new Message());
-    }
+  public void announceClosed() throws XMPPException {
+    this.currentChat.sendMessage(new Message());
+  }
 
-    public void stop() {
-        this.connection.disconnect();
-    }
+  public void stop() {
+    this.connection.disconnect();
+  }
 
-    public String getItemId() {
-        return this.itemId;
-    }
+  public String getItemId() {
+    return this.itemId;
+  }
 
 }

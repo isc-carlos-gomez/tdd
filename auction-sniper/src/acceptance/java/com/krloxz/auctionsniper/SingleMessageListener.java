@@ -16,15 +16,15 @@ import org.jivesoftware.smack.packet.Message;
  */
 public class SingleMessageListener implements MessageListener {
 
-    private final ArrayBlockingQueue<Message> messages = new ArrayBlockingQueue<>(1);
+  private final ArrayBlockingQueue<Message> messages = new ArrayBlockingQueue<>(1);
 
-    @Override
-    public void processMessage(final Chat chat, final Message message) {
-        this.messages.add(message);
-    }
+  @Override
+  public void processMessage(final Chat chat, final Message message) {
+    this.messages.add(message);
+  }
 
-    public void receivesAMessage() throws InterruptedException {
-        assertThat("Message", this.messages.poll(5, TimeUnit.SECONDS), is(notNullValue()));
-    }
+  public void receivesAMessage() throws InterruptedException {
+    assertThat("Message", this.messages.poll(5, TimeUnit.SECONDS), is(notNullValue()));
+  }
 
 }

@@ -10,26 +10,26 @@ import org.junit.jupiter.api.Test;
  */
 public class AuctionSniperEndToEndTest {
 
-    private final FakeAuctionServer auction = new FakeAuctionServer("item-54321");
-    private final ApplicationRunner application = new ApplicationRunner();
+  private final FakeAuctionServer auction = new FakeAuctionServer("item-54321");
+  private final ApplicationRunner application = new ApplicationRunner();
 
-    @Test
-    public void sniperJoinsAuctionUntilAuctionCloses() throws Exception {
-        this.auction.startSellingItem();
-        this.application.startBiddingIn(this.auction);
-        this.auction.hasReceivedJoinRequestFromSniper();
-        this.auction.announceClosed();
-        this.application.showsSniperHasLostAuction();
-    }
+  @Test
+  public void sniperJoinsAuctionUntilAuctionCloses() throws Exception {
+    this.auction.startSellingItem();
+    this.application.startBiddingIn(this.auction);
+    this.auction.hasReceivedJoinRequestFromSniper();
+    this.auction.announceClosed();
+    this.application.showsSniperHasLostAuction();
+  }
 
-    @AfterEach
-    public void stopAuction() {
-        this.auction.stop();
-    }
+  @AfterEach
+  public void stopAuction() {
+    this.auction.stop();
+  }
 
-    @AfterEach
-    public void stopApplication() {
-        this.application.stop();
-    }
+  @AfterEach
+  public void stopApplication() {
+    this.application.stop();
+  }
 
 }
