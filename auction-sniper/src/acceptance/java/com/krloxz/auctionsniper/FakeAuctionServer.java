@@ -1,10 +1,13 @@
 package com.krloxz.auctionsniper;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import org.hamcrest.Matcher;
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ChatManagerListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.packet.Message;
 
 /**
  * @author Carlos Gomez
@@ -40,12 +43,21 @@ public class FakeAuctionServer {
     });
   }
 
-  public void hasReceivedJoinRequestFromSniper() throws InterruptedException {
-    this.messageListener.receivesAMessage();
+  public void reportPrice(final int price, final int increment, final String bidder) throws XMPPException {
+    this.currentChat.sendMessage(String.format(
+        "SOLVersion: 1.1; Event: PRICE; " + "CurrentPrice: %d; Increment: %d; Bidder: %s;", price, increment, bidder));
+  }
+
+  public void hasReceivedJoinRequestFrom(final String sniperId) throws InterruptedException {
+    receivesAMessageMatching(sniperId, equalTo(Main.JOIN_COMMAND_FORMAT));
+  }
+
+  public void hasReceivedBid(final int bid, final String sniperId) throws InterruptedException {
+    receivesAMessageMatching(sniperId, equalTo(String.format(Main.BID_COMMAND_FORMAT, bid)));
   }
 
   public void announceClosed() throws XMPPException {
-    this.currentChat.sendMessage(new Message());
+    this.currentChat.sendMessage("SOLVersion: 1.1; Event: CLOSE;");
   }
 
   public void stop() {
@@ -54,6 +66,12 @@ public class FakeAuctionServer {
 
   public String getItemId() {
     return this.itemId;
+  }
+
+  private void receivesAMessageMatching(final String sniperId, final Matcher<? super String> messageMatcher)
+      throws InterruptedException {
+    this.messageListener.receivesAMessage(messageMatcher);
+    assertThat(this.currentChat.getParticipant(), equalTo(sniperId));
   }
 
 }
