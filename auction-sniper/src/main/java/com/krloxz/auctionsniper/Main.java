@@ -12,7 +12,7 @@ import org.jivesoftware.smack.XMPPException;
 /**
  * @author Carlos Gomez
  */
-public class Main implements AuctionEventListener {
+public class Main implements SniperListener {
 
   public static final String AUCTION_RESOURCE = "Auction";
   public static final String ITEM_ID_AS_LOGIN = "auction-%s";
@@ -48,10 +48,24 @@ public class Main implements AuctionEventListener {
 
   private void joinAuction(final XMPPConnection connection, final String itemId) throws XMPPException {
     disconnectWhenUICloses(connection);
-    final Chat chat = connection.getChatManager().createChat(
-        auctionId(itemId, connection),
-        new AuctionMessageTranslator(this));
+
+    final Chat chat =
+        connection.getChatManager().createChat(auctionId(itemId, connection), null);
     this.notToBeGCd = chat;
+
+    final Auction auction = new Auction() {
+      @Override
+      public void bid(final int amount) {
+        try {
+          chat.sendMessage(String.format(BID_COMMAND_FORMAT, amount));
+        } catch (final XMPPException e) {
+          e.printStackTrace();
+        }
+      }
+    };
+
+    chat.addMessageListener(
+        new AuctionMessageTranslator(new AuctionSniper(auction, this)));
     chat.sendMessage(JOIN_COMMAND_FORMAT);
   }
 
@@ -79,7 +93,7 @@ public class Main implements AuctionEventListener {
   }
 
   @Override
-  public void auctionClosed() {
+  public void sniperLost() {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
@@ -89,9 +103,13 @@ public class Main implements AuctionEventListener {
   }
 
   @Override
-  public void currentPrice(final int price, final int increment) {
-    // TODO Auto-generated method stub
-
+  public void sniperBidding() {
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        Main.this.ui.showStatus(MainWindow.STATUS_BIDDING);
+      }
+    });
   }
 
 }
