@@ -4,6 +4,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -62,6 +63,29 @@ class AuctionSniperTest {
     final InOrder inOrder = inOrder(this.sniperListener);
     inOrder.verify(this.sniperListener).sniperWinning();
     inOrder.verify(this.sniperListener).sniperWon();
+    inOrder.verifyNoMoreInteractions();
+  }
+
+  @Test
+  void skipsBiddingWhenCurrentPriceComesFromSniper() {
+    this.sniper.currentPrice(123, 45, PriceSource.FromSniper);
+    verifyNoInteractions(this.auction);
+  }
+
+  @Test
+  void reportsBiddingWhenCurrentPriceComesFromOtherBidder() {
+    this.sniper.currentPrice(123, 45, PriceSource.FromOtherBidder);
+    verify(this.sniperListener).sniperBidding();
+  }
+
+  @Test
+  void reportsBiddingWhenWinningAndCurrentPriceComesFromOtherBidder() {
+    this.sniper.currentPrice(123, 45, PriceSource.FromSniper);
+    this.sniper.currentPrice(168, 45, PriceSource.FromOtherBidder);
+
+    final InOrder inOrder = inOrder(this.sniperListener);
+    inOrder.verify(this.sniperListener).sniperWinning();
+    inOrder.verify(this.sniperListener).sniperBidding();
     inOrder.verifyNoMoreInteractions();
   }
 
