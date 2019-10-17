@@ -57,7 +57,9 @@ public class Main {
     final Auction auction = new XMPPAuction(chat);
 
     chat.addMessageListener(
-        new AuctionMessageTranslator(new AuctionSniper(auction, new SniperStateDisplayer())));
+        new AuctionMessageTranslator(
+            connection.getUser(),
+            new AuctionSniper(auction, new SniperStateDisplayer())));
     auction.join();
   }
 
@@ -96,8 +98,14 @@ public class Main {
       showStatus(MainWindow.STATUS_LOST);
     }
 
+    @Override
     public void sniperWinning() {
       showStatus(MainWindow.STATUS_WINNING);
+    }
+
+    @Override
+    public void sniperWon() {
+      showStatus(MainWindow.STATUS_WON);
     }
 
     private void showStatus(final String status) {
