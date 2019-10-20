@@ -7,23 +7,8 @@ package com.krloxz.auctionsniper;
 public interface SniperListener {
 
   /**
-   *
+   * @param sniperSnapshot
    */
-  void sniperLost();
-
-  /**
-   *
-   */
-  void sniperBidding();
-
-  /**
-   *
-   */
-  void sniperWinning();
-
-  /**
-   *
-   */
-  void sniperWon();
+  void sniperStateChanged(SniperSnapshot sniperSnapshot);
 
 }

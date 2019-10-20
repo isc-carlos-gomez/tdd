@@ -25,6 +25,7 @@ public class Main {
   private static final int ARG_PASSWORD = 2;
   private static final int ARG_ITEM_ID = 3;
 
+  private final SnipersTableModel snipers = new SnipersTableModel();
   private MainWindow ui;
 
   @SuppressWarnings("unused")
@@ -59,7 +60,7 @@ public class Main {
     chat.addMessageListener(
         new AuctionMessageTranslator(
             connection.getUser(),
-            new AuctionSniper(auction, new SniperStateDisplayer())));
+            new AuctionSniper(auction, new SwingThreadSniperListener(this.snipers), itemId)));
     auction.join();
   }
 
@@ -81,40 +82,21 @@ public class Main {
 
       @Override
       public void run() {
-        Main.this.ui = new MainWindow();
+        Main.this.ui = new MainWindow(Main.this.snipers);
       }
     });
   }
 
-  public class SniperStateDisplayer implements SniperListener {
+  public class SwingThreadSniperListener implements SniperListener {
+    private final SnipersTableModel snipers;
 
-    @Override
-    public void sniperBidding() {
-      showStatus(MainWindow.STATUS_BIDDING);
+    public SwingThreadSniperListener(final SnipersTableModel snipers) {
+      this.snipers = snipers;
     }
 
     @Override
-    public void sniperLost() {
-      showStatus(MainWindow.STATUS_LOST);
-    }
-
-    @Override
-    public void sniperWinning() {
-      showStatus(MainWindow.STATUS_WINNING);
-    }
-
-    @Override
-    public void sniperWon() {
-      showStatus(MainWindow.STATUS_WON);
-    }
-
-    private void showStatus(final String status) {
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          Main.this.ui.showStatusText(status);
-        }
-      });
+    public void sniperStateChanged(final SniperSnapshot sniperSnapshot) {
+      this.snipers.sniperStateChanged(sniperSnapshot);
     }
   }
 
