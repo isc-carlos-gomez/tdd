@@ -112,7 +112,7 @@ public class Main {
       SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
-          Main.this.ui.showStatus(status);
+          Main.this.ui.showStatusText(status);
         }
       });
     }
