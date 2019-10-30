@@ -3,6 +3,7 @@ package com.krloxz.auctionsniper;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * @author Carlos Gomez
@@ -38,6 +39,10 @@ public class SniperSnapshot {
     return new SniperSnapshot(this.itemId, this.lastPrice, this.lastBid, this.state.whenAuctionClosed());
   }
 
+  public boolean isForSameItemAs(final SniperSnapshot sniperSnapshot) {
+    return this.itemId.equals(sniperSnapshot.itemId);
+  }
+
   @Override
   public boolean equals(final Object obj) {
     return EqualsBuilder.reflectionEquals(this, obj);
@@ -50,7 +55,7 @@ public class SniperSnapshot {
 
   @Override
   public String toString() {
-    return ToStringBuilder.reflectionToString(this);
+    return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
   }
 
   public enum SniperState {

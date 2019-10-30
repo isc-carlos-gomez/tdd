@@ -1,7 +1,6 @@
 package com.krloxz.auctionsniper;
 
 import static com.objogate.wl.swing.matcher.JLabelTextMatcher.withLabelText;
-import static org.hamcrest.Matchers.equalTo;
 
 import javax.swing.table.JTableHeader;
 
@@ -24,17 +23,14 @@ public class AuctionSniperDriver extends JFrameDriver {
   }
 
   @SuppressWarnings("unchecked")
-  public void showsSniperStatus(final String statusText) {
-    new JTableDriver(this).hasCell(withLabelText(equalTo(statusText)));
-  }
-
-  @SuppressWarnings("unchecked")
   public void showsSniperState(final SniperSnapshot snapshot) {
     final JTableDriver table = new JTableDriver(this);
-    table.cellRenderedWithText(0, 0, equalTo(snapshot.itemId));
-    table.cellRenderedWithText(0, 1, equalTo("" + snapshot.lastPrice));
-    table.cellRenderedWithText(0, 2, equalTo("" + snapshot.lastBid));
-    table.cellRenderedWithText(0, 3, equalTo(SnipersTableModel.textFor(snapshot.state)));
+    table.hasRow(
+        IterableComponentsMatcher.matching(
+            withLabelText(snapshot.itemId),
+            withLabelText(snapshot.lastPrice + ""),
+            withLabelText(snapshot.lastBid + ""),
+            withLabelText(SnipersTableModel.textFor(snapshot.state))));
   }
 
   @SuppressWarnings("unchecked")

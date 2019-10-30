@@ -1,8 +1,9 @@
 package com.krloxz.auctionsniper;
 
+import static com.krloxz.auctionsniper.CustomMatchers.hasRowWithSniper;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.samePropertyValuesAs;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -13,9 +14,7 @@ import javax.swing.event.TableModelListener;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatcher;
-import org.mockito.internal.hamcrest.HamcrestArgumentMatcher;
 
-import com.krloxz.auctionsniper.SniperSnapshot.SniperState;
 import com.krloxz.auctionsniper.SnipersTableModel.Column;
 
 /**
@@ -41,25 +40,99 @@ class SnipersTableModelTest {
 
   @Test
   void setsSniperValuesInColumns() {
-    this.model.sniperStateChanged(new SniperSnapshot("item id", 555, 666, SniperState.BIDDING));
+    final SniperSnapshot joining = SniperSnapshot.joining("item123");
+    final SniperSnapshot bidding = joining.bidding(555, 666);
 
-    assertColumnEquals(Column.ITEM_IDENTIFIER, "item id");
-    assertColumnEquals(Column.LAST_PRICE, 555);
-    assertColumnEquals(Column.LAST_BID, 666);
-    assertColumnEquals(Column.SNIPER_STATE, MainWindow.STATUS_BIDDING);
+    this.model.addSniper(bidding);
+    this.model.sniperStateChanged(bidding);
+    assertThat(this.model, hasRowWithSniper(0, bidding));
 
-    verify(this.listener).tableChanged(argThat(isRowChangedEvent()));
+    verify(this.listener).tableChanged(withAnUpdateAtRow(0));
   }
 
-  private void assertColumnEquals(final Column column, final Object expected) {
-    final int rowIndex = 0;
-    final int columnIndex = column.ordinal();
+  @Test
+  void notifiesListenersWhenAddingASniper() {
+    final SniperSnapshot joining = SniperSnapshot.joining("item123");
+    assertThat(this.model.getRowCount(), is(0));
 
-    assertThat(this.model.getValueAt(rowIndex, columnIndex), is(expected));
+    this.model.addSniper(joining);
+    assertThat(this.model, hasRowWithSniper(0, joining));
+
+    verify(this.listener).tableChanged(withAnInsertionAtRow(0));
   }
 
-  private ArgumentMatcher<TableModelEvent> isRowChangedEvent() {
-    return new HamcrestArgumentMatcher<>(samePropertyValuesAs(new TableModelEvent(this.model, 0)));
+  @Test
+  void holdsSnipersInAdditionOrder() {
+    final SniperSnapshot sniper1 = SniperSnapshot.joining("item 1");
+    final SniperSnapshot sniper2 = SniperSnapshot.joining("item 2");
+
+    this.model.addSniper(sniper1);
+    this.model.addSniper(sniper2);
+
+    assertThat(this.model, hasRowWithSniper(0, sniper1));
+    assertThat(this.model, hasRowWithSniper(1, sniper2));
+  }
+
+  @Test
+  void updatesCorrectRowForSniper() {
+    final SniperSnapshot joiningSniper1 = SniperSnapshot.joining("item 1");
+    final SniperSnapshot joiningSniper2 = SniperSnapshot.joining("item 2");
+    this.model.addSniper(joiningSniper1);
+    this.model.addSniper(joiningSniper2);
+
+    final SniperSnapshot biddingSniper2 = joiningSniper2.bidding(200, 100);
+    assertThat(this.model, hasRowWithSniper(1, joiningSniper2));
+
+    this.model.sniperStateChanged(biddingSniper2);
+    assertThat(this.model, hasRowWithSniper(1, biddingSniper2));
+    verify(this.listener).tableChanged(withAnUpdateAtRow(1));
+  }
+
+  @Test
+  void throwsDefectIfNoExistingSniperForAnUpdate() {
+    final SniperSnapshot joiningSniper1 = SniperSnapshot.joining("item 1");
+    final SniperSnapshot joiningSniper2 = SniperSnapshot.joining("item 2");
+    this.model.addSniper(joiningSniper1);
+    this.model.addSniper(joiningSniper2);
+
+    assertThrows(Defect.class,
+        () -> this.model.sniperStateChanged(SniperSnapshot.joining("other item")));
+  }
+
+  private TableModelEvent withAnUpdateAtRow(final int rowIndex) {
+    return argThat(
+        new ArgumentMatcher<TableModelEvent>() {
+
+          @Override
+          public boolean matches(final TableModelEvent event) {
+            return event.getType() == TableModelEvent.UPDATE
+                && event.getFirstRow() == rowIndex
+                && event.getLastRow() == rowIndex;
+          }
+
+          @Override
+          public String toString() {
+            return "with an update at row " + rowIndex;
+          }
+        });
+  }
+
+  private TableModelEvent withAnInsertionAtRow(final int rowIndex) {
+    return argThat(
+        new ArgumentMatcher<TableModelEvent>() {
+
+          @Override
+          public boolean matches(final TableModelEvent event) {
+            return event.getType() == TableModelEvent.INSERT
+                && event.getFirstRow() == rowIndex
+                && event.getLastRow() == rowIndex;
+          }
+
+          @Override
+          public String toString() {
+            return "with an insertion at row " + rowIndex;
+          }
+        });
   }
 
 }

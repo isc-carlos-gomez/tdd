@@ -10,11 +10,10 @@ public class AuctionSniper implements AuctionEventListener {
   private final Auction auction;
   private SniperSnapshot snapshot;
 
-  public AuctionSniper(final Auction auction, final SniperListener sniperListener, final String itemId) {
+  public AuctionSniper(final String itemId, final Auction auction, final SniperListener sniperListener) {
     this.auction = auction;
     this.sniperListener = sniperListener;
     this.snapshot = SniperSnapshot.joining(itemId);
-    notifyChange();
   }
 
   @Override
