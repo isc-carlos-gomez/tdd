@@ -37,11 +37,10 @@ public class Main {
 
   public static void main(final String... args) throws Exception {
     final Main main = new Main();
-    final XMPPConnection connection = connection(args[ARG_HOSTNAME], args[ARG_USERNAME], args[ARG_PASSWORD]);
+    final XMPPConnection connection = connection(args[ARG_HOSTNAME], args[ARG_USERNAME],
+        args[ARG_PASSWORD]);
     main.disconnectWhenUICloses(connection);
-    for (int i = 3; i < args.length; i++) {
-      main.joinAuction(connection, args[i]);
-    }
+    main.addUserRequestListenerFor(connection);
   }
 
   private static XMPPConnection connection(final String hostname, final String username, final String password)
@@ -52,7 +51,13 @@ public class Main {
     return connection;
   }
 
-  private void joinAuction(final XMPPConnection connection, final String itemId) throws Exception {
+  private void addUserRequestListenerFor(final XMPPConnection connection) {
+    this.ui.addUserRequestListener(itemId -> joinAuction(connection, itemId));
+  }
+
+  private void joinAuction(final XMPPConnection connection, final String itemId) {
+    this.snipers.addSniper(SniperSnapshot.joining(itemId));
+
     final Chat chat = connection.getChatManager()
         .createChat(auctionId(itemId, connection), null);
     this.notToBeGCd.add(chat);
@@ -63,7 +68,6 @@ public class Main {
             connection.getUser(),
             new AuctionSniper(itemId, auction, new SwingThreadSniperListener(this.snipers))));
     auction.join();
-    safelyAddItemToModel(itemId);
   }
 
   private void disconnectWhenUICloses(final XMPPConnection connection) {
@@ -85,15 +89,6 @@ public class Main {
       @Override
       public void run() {
         Main.this.ui = new MainWindow(Main.this.snipers);
-      }
-    });
-  }
-
-  private void safelyAddItemToModel(final String itemId) throws Exception {
-    SwingUtilities.invokeAndWait(new Runnable() {
-      @Override
-      public void run() {
-        Main.this.snipers.addSniper(SniperSnapshot.joining(itemId));
       }
     });
   }
