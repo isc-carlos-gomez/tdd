@@ -1,19 +1,23 @@
 package com.krloxz.auctionsniper.domain;
 
+import com.krloxz.auctionsniper.util.Announcer;
+
 /**
  * @author Carlos Gomez
  *
  */
 public class AuctionSniper implements AuctionEventListener {
 
-  private final SniperListener sniperListener;
+  private final String itemId;
   private final Auction auction;
   private SniperSnapshot snapshot;
+  private final Announcer<SniperListener> sniperListener;
 
-  public AuctionSniper(final String itemId, final Auction auction, final SniperListener sniperListener) {
+  public AuctionSniper(final String itemId, final Auction auction) {
+    this.itemId = itemId;
     this.auction = auction;
-    this.sniperListener = sniperListener;
     this.snapshot = SniperSnapshot.joining(itemId);
+    this.sniperListener = new Announcer<>(SniperListener.class);
   }
 
   @Override
@@ -37,8 +41,20 @@ public class AuctionSniper implements AuctionEventListener {
     notifyChange();
   }
 
+  public SniperSnapshot getSnapshot() {
+    return this.snapshot;
+  }
+
+  public void addSniperListener(final SniperListener sniperListener) {
+    this.sniperListener.addListener(sniperListener);
+  }
+
+  protected boolean isForItem(final String itemId) {
+    return this.itemId.equals(itemId);
+  }
+
   private void notifyChange() {
-    this.sniperListener.sniperStateChanged(this.snapshot);
+    this.sniperListener.announce().sniperStateChanged(this.snapshot);
   }
 
 }

@@ -7,6 +7,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.InOrder;
@@ -15,15 +16,25 @@ import com.krloxz.auctionsniper.domain.AuctionEventListener.PriceSource;
 import com.krloxz.auctionsniper.domain.SniperSnapshot.SniperState;
 
 /**
+ * Unit tests {@link AuctionSniper}.
+ * 
  * @author Carlos Gomez
  *
  */
 class AuctionSniperTest {
 
   private static final String ITEM_ID = "itemId";
-  private final Auction auction = mock(Auction.class);
-  private final SniperListener sniperListener = mock(SniperListener.class);
-  private final AuctionSniper sniper = new AuctionSniper(ITEM_ID, this.auction, this.sniperListener);
+  private Auction auction;
+  private SniperListener sniperListener;
+  private AuctionSniper sniper;
+
+  @BeforeEach
+  void setUp() {
+    this.auction = mock(Auction.class);
+    this.sniperListener = mock(SniperListener.class);
+    this.sniper = new AuctionSniper(ITEM_ID, this.auction);
+    this.sniper.addSniperListener(this.sniperListener);
+  }
 
   @Test
   void reportsLostIfAuctionClosesImmediately() {

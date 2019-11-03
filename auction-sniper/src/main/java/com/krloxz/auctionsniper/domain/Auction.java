@@ -10,4 +10,6 @@ public interface Auction {
 
   void join();
 
+  void addAuctionEventListener(AuctionEventListener listener);
+
 }

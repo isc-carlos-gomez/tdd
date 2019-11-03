@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.is;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import com.krloxz.auctionsniper.domain.SniperPortfolio;
 import com.krloxz.auctionsniper.test.AuctionSniperDriver;
 import com.objogate.wl.swing.probe.ValueMatcherProbe;
 
@@ -16,8 +17,8 @@ import com.objogate.wl.swing.probe.ValueMatcherProbe;
  */
 class MainWindowIntTest {
 
-  private final SnipersTableModel tableModel = new SnipersTableModel();
-  private final MainWindow mainWindow = new MainWindow(this.tableModel);
+  private final SniperPortfolio sniperPortfolio = new SniperPortfolio();
+  private final MainWindow mainWindow = new MainWindow(this.sniperPortfolio);
   private final AuctionSniperDriver driver = new AuctionSniperDriver(100);
 
   @Test

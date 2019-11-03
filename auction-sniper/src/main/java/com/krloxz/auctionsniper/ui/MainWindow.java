@@ -13,6 +13,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 
+import com.krloxz.auctionsniper.domain.SniperPortfolio;
 import com.krloxz.auctionsniper.domain.UserRequestListener;
 import com.krloxz.auctionsniper.util.Announcer;
 
@@ -34,16 +35,14 @@ public class MainWindow extends JFrame {
   public static final String STATUS_WON = "Won";
 
   private static final long serialVersionUID = -6760751900182013662L;
-  private final SnipersTableModel snipers;
   private final Announcer<UserRequestListener> userRequests;
 
-  public MainWindow(final SnipersTableModel snipers) {
+  public MainWindow(final SniperPortfolio portfolio) {
     super(APPLICATION_TITLE);
-    this.snipers = snipers;
     this.userRequests = Announcer.to(UserRequestListener.class);
 
     setName(MAIN_WINDOW_NAME);
-    fillContentPane(makeSnipersTable(), makeControls());
+    fillContentPane(makeSnipersTable(portfolio), makeControls());
     pack();
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setVisible(true);
@@ -60,8 +59,10 @@ public class MainWindow extends JFrame {
     contentPane.add(new JScrollPane(snipersTable), BorderLayout.CENTER);
   }
 
-  private JTable makeSnipersTable() {
-    final JTable snipersTable = new JTable(this.snipers);
+  private JTable makeSnipersTable(final SniperPortfolio portfolio) {
+    final SnipersTableModel model = new SnipersTableModel();
+    portfolio.addPortfolioListener(model);
+    final JTable snipersTable = new JTable(model);
     snipersTable.setName(SNIPERS_TABLE_NAME);
     return snipersTable;
   }

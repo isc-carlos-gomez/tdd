@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+import com.krloxz.auctionsniper.domain.AuctionSniper;
+import com.krloxz.auctionsniper.domain.PortfolioListener;
 import com.krloxz.auctionsniper.domain.SniperListener;
 import com.krloxz.auctionsniper.domain.SniperSnapshot;
 import com.krloxz.auctionsniper.domain.SniperSnapshot.SniperState;
@@ -14,17 +16,20 @@ import com.krloxz.auctionsniper.util.Defect;
  * @author Carlos Gomez
  *
  */
-public class SnipersTableModel extends AbstractTableModel implements SniperListener {
+public class SnipersTableModel extends AbstractTableModel
+    implements SniperListener, PortfolioListener {
 
   private static final long serialVersionUID = 2685916085280519480L;
   private static final String[] STATUS_TEXT = {
       "Joining", "Bidding", "Winning", "Lost", "Won"
   };
+
   private final List<SniperSnapshot> snapshots = new ArrayList<>();
 
-  public void addSniper(final SniperSnapshot snapshot) {
-    this.snapshots.add(snapshot);
-    fireTableRowsInserted(this.snapshots.size() - 1, this.snapshots.size() - 1);
+  @Override
+  public void sniperAdded(final AuctionSniper sniper) {
+    sniper.addSniperListener(this);
+    addSniper(sniper.getSnapshot());
   }
 
   @Override
@@ -52,6 +57,12 @@ public class SnipersTableModel extends AbstractTableModel implements SniperListe
     final int row = rowMatching(newSnapshot);
     this.snapshots.set(row, newSnapshot);
     fireTableRowsUpdated(row, row);
+  }
+
+  private void addSniper(final SniperSnapshot snapshot) {
+    this.snapshots.add(snapshot);
+    final int row = this.snapshots.size() - 1;
+    fireTableRowsInserted(row, row);
   }
 
   private int rowMatching(final SniperSnapshot newSnapshot) {

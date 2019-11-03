@@ -9,7 +9,7 @@ import org.jivesoftware.smack.ChatManagerListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 
-import com.krloxz.auctionsniper.Main;
+import com.krloxz.auctionsniper.xmpp.XMPPAuction;
 
 /**
  * @author Carlos Gomez
@@ -51,11 +51,11 @@ public class FakeAuctionServer {
   }
 
   public void hasReceivedJoinRequestFrom(final String sniperId) throws InterruptedException {
-    receivesAMessageMatching(sniperId, equalTo(Main.JOIN_COMMAND_FORMAT));
+    receivesAMessageMatching(sniperId, equalTo(XMPPAuction.JOIN_COMMAND_FORMAT));
   }
 
   public void hasReceivedBid(final int bid, final String sniperId) throws InterruptedException {
-    receivesAMessageMatching(sniperId, equalTo(String.format(Main.BID_COMMAND_FORMAT, bid)));
+    receivesAMessageMatching(sniperId, equalTo(String.format(XMPPAuction.BID_COMMAND_FORMAT, bid)));
   }
 
   public void announceClosed() throws XMPPException {
