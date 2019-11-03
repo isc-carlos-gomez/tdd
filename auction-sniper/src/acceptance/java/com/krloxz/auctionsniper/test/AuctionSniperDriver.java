@@ -1,4 +1,4 @@
-package com.krloxz.auctionsniper;
+package com.krloxz.auctionsniper.test;
 
 import static com.objogate.wl.swing.matcher.JLabelTextMatcher.withLabelText;
 
@@ -6,6 +6,9 @@ import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.table.JTableHeader;
 
+import com.krloxz.auctionsniper.domain.SniperSnapshot;
+import com.krloxz.auctionsniper.ui.MainWindow;
+import com.krloxz.auctionsniper.ui.SnipersTableModel;
 import com.objogate.wl.swing.AWTEventQueueProber;
 import com.objogate.wl.swing.driver.JButtonDriver;
 import com.objogate.wl.swing.driver.JFrameDriver;

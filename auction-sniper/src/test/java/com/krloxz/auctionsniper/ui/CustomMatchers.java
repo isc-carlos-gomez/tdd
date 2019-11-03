@@ -1,6 +1,8 @@
-package com.krloxz.auctionsniper;
+package com.krloxz.auctionsniper.ui;
 
 import org.hamcrest.Matcher;
+
+import com.krloxz.auctionsniper.domain.SniperSnapshot;
 
 /**
  * Collection of custom Hamcrest matchers.

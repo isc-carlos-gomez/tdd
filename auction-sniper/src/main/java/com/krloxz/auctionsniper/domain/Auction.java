@@ -1,4 +1,4 @@
-package com.krloxz.auctionsniper;
+package com.krloxz.auctionsniper.domain;
 
 /**
  * @author Carlos Gomez

@@ -1,11 +1,14 @@
-package com.krloxz.auctionsniper;
+package com.krloxz.auctionsniper.ui;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-import com.krloxz.auctionsniper.SniperSnapshot.SniperState;
+import com.krloxz.auctionsniper.domain.SniperListener;
+import com.krloxz.auctionsniper.domain.SniperSnapshot;
+import com.krloxz.auctionsniper.domain.SniperSnapshot.SniperState;
+import com.krloxz.auctionsniper.util.Defect;
 
 /**
  * @author Carlos Gomez

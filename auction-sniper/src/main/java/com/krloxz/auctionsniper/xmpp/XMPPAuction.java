@@ -1,7 +1,10 @@
-package com.krloxz.auctionsniper;
+package com.krloxz.auctionsniper.xmpp;
 
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.XMPPException;
+
+import com.krloxz.auctionsniper.Main;
+import com.krloxz.auctionsniper.domain.Auction;
 
 public class XMPPAuction implements Auction {
 

@@ -1,4 +1,4 @@
-package com.krloxz.auctionsniper;
+package com.krloxz.auctionsniper.test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -8,6 +8,8 @@ import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ChatManagerListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
+
+import com.krloxz.auctionsniper.Main;
 
 /**
  * @author Carlos Gomez

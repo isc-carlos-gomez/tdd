@@ -1,6 +1,6 @@
-package com.krloxz.auctionsniper;
+package com.krloxz.auctionsniper.ui;
 
-import static com.krloxz.auctionsniper.CustomMatchers.hasCellWithValue;
+import static com.krloxz.auctionsniper.ui.CustomMatchers.hasCellWithValue;
 import static org.hamcrest.Matchers.is;
 
 import java.util.Arrays;
@@ -10,7 +10,8 @@ import org.hamcrest.Description;
 import org.hamcrest.Factory;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 
-import com.krloxz.auctionsniper.SnipersTableModel.Column;
+import com.krloxz.auctionsniper.domain.SniperSnapshot;
+import com.krloxz.auctionsniper.ui.SnipersTableModel.Column;
 
 public class HasRowWithSniper extends TypeSafeDiagnosingMatcher<SnipersTableModel> {
 

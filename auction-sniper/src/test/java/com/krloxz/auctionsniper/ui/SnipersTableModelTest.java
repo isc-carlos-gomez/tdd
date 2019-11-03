@@ -1,6 +1,6 @@
-package com.krloxz.auctionsniper;
+package com.krloxz.auctionsniper.ui;
 
-import static com.krloxz.auctionsniper.CustomMatchers.hasRowWithSniper;
+import static com.krloxz.auctionsniper.ui.CustomMatchers.hasRowWithSniper;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -15,7 +15,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatcher;
 
-import com.krloxz.auctionsniper.SnipersTableModel.Column;
+import com.krloxz.auctionsniper.domain.SniperSnapshot;
+import com.krloxz.auctionsniper.ui.SnipersTableModel.Column;
+import com.krloxz.auctionsniper.util.Defect;
 
 /**
  * @author Carlos Gomez

@@ -11,6 +11,15 @@ import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 
+import com.krloxz.auctionsniper.domain.Auction;
+import com.krloxz.auctionsniper.domain.AuctionSniper;
+import com.krloxz.auctionsniper.domain.SniperListener;
+import com.krloxz.auctionsniper.domain.SniperSnapshot;
+import com.krloxz.auctionsniper.ui.MainWindow;
+import com.krloxz.auctionsniper.ui.SnipersTableModel;
+import com.krloxz.auctionsniper.xmpp.AuctionMessageTranslator;
+import com.krloxz.auctionsniper.xmpp.XMPPAuction;
+
 /**
  * @author Carlos Gomez
  */

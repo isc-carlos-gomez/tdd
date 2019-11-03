@@ -1,4 +1,4 @@
-package com.krloxz.auctionsniper;
+package com.krloxz.auctionsniper.xmpp;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -7,7 +7,8 @@ import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.packet.Message;
 import org.junit.jupiter.api.Test;
 
-import com.krloxz.auctionsniper.AuctionEventListener.PriceSource;
+import com.krloxz.auctionsniper.domain.AuctionEventListener;
+import com.krloxz.auctionsniper.domain.AuctionEventListener.PriceSource;
 
 class AuctionMessageTranslatorTest {
 

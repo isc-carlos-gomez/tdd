@@ -1,9 +1,11 @@
-package com.krloxz.auctionsniper;
+package com.krloxz.auctionsniper.ui;
 
 import static org.hamcrest.Matchers.is;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import com.krloxz.auctionsniper.test.AuctionSniperDriver;
 import com.objogate.wl.swing.probe.ValueMatcherProbe;
 
 /**
@@ -25,6 +27,11 @@ class MainWindowIntTest {
     this.mainWindow.addUserRequestListener(itemId -> buttonProbe.setReceivedValue(itemId));
     this.driver.startBiddingFor("item-123");
     this.driver.check(buttonProbe);
+  }
+
+  @AfterEach
+  void disposeDriver() {
+    this.driver.dispose();
   }
 
 }

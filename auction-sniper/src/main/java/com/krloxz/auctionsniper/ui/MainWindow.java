@@ -1,4 +1,4 @@
-package com.krloxz.auctionsniper;
+package com.krloxz.auctionsniper.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -12,6 +12,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+
+import com.krloxz.auctionsniper.domain.UserRequestListener;
+import com.krloxz.auctionsniper.util.Announcer;
 
 /**
  * @author Carlos Gomez

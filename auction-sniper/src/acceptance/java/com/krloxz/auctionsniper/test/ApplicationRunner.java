@@ -1,6 +1,9 @@
-package com.krloxz.auctionsniper;
+package com.krloxz.auctionsniper.test;
 
-import com.krloxz.auctionsniper.SniperSnapshot.SniperState;
+import com.krloxz.auctionsniper.Main;
+import com.krloxz.auctionsniper.domain.SniperSnapshot;
+import com.krloxz.auctionsniper.domain.SniperSnapshot.SniperState;
+import com.krloxz.auctionsniper.ui.MainWindow;
 
 /**
  * @author Carlos Gomez

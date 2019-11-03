@@ -1,4 +1,4 @@
-package com.krloxz.auctionsniper;
+package com.krloxz.auctionsniper.ui;
 
 import org.hamcrest.Description;
 import org.hamcrest.Factory;

@@ -1,4 +1,4 @@
-package com.krloxz.auctionsniper;
+package com.krloxz.auctionsniper.util;
 
 /**
  * Thrown when the code reaches a condition that could only be caused by a programming error.

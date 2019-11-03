@@ -1,4 +1,4 @@
-package com.krloxz.auctionsniper;
+package com.krloxz.auctionsniper.domain;
 
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.atLeastOnce;
@@ -11,8 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.InOrder;
 
-import com.krloxz.auctionsniper.AuctionEventListener.PriceSource;
-import com.krloxz.auctionsniper.SniperSnapshot.SniperState;
+import com.krloxz.auctionsniper.domain.AuctionEventListener.PriceSource;
+import com.krloxz.auctionsniper.domain.SniperSnapshot.SniperState;
 
 /**
  * @author Carlos Gomez

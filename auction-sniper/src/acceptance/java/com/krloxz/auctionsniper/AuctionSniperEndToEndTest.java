@@ -3,6 +3,9 @@ package com.krloxz.auctionsniper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import com.krloxz.auctionsniper.test.ApplicationRunner;
+import com.krloxz.auctionsniper.test.FakeAuctionServer;
+
 /**
  * Acceptance test cases for the Auction Sniper application.
  *
