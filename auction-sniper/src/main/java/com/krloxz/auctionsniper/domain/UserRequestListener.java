@@ -12,10 +12,10 @@ public interface UserRequestListener extends EventListener {
 
   /**
    * Requests to join to the auction of the given item.
-   * 
-   * @param itemId
-   *        item identifier
+   *
+   * @param item
+   *        the item
    */
-  void joinAuction(String itemId);
+  void joinAuction(Item item);
 
 }

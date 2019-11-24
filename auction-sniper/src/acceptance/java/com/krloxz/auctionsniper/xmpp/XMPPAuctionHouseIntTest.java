@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import com.krloxz.auctionsniper.domain.Auction;
 import com.krloxz.auctionsniper.domain.AuctionEventListener;
+import com.krloxz.auctionsniper.domain.Item;
 import com.krloxz.auctionsniper.test.ApplicationRunner;
 import com.krloxz.auctionsniper.test.FakeAuctionServer;
 
@@ -36,7 +37,7 @@ class XMPPAuctionHouseIntTest {
 
     final XMPPAuctionHouse auctionHouse = XMPPAuctionHouse.connect(
         ApplicationRunner.XMPP_HOSTNAME, ApplicationRunner.SNIPER_ID, ApplicationRunner.SNIPER_PASSWORD);
-    final Auction auction = auctionHouse.auctionFor(this.auctionServer.getItemId());
+    final Auction auction = auctionHouse.auctionFor(new Item(this.auctionServer.getItemId(), 789));
     auction.addAuctionEventListener(auctionClosedListener(auctionWasClosed));
 
     auction.join();

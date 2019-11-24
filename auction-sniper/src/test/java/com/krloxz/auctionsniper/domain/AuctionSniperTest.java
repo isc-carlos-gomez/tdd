@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -17,7 +18,7 @@ import com.krloxz.auctionsniper.domain.SniperSnapshot.SniperState;
 
 /**
  * Unit tests {@link AuctionSniper}.
- * 
+ *
  * @author Carlos Gomez
  *
  */
@@ -32,7 +33,7 @@ class AuctionSniperTest {
   void setUp() {
     this.auction = mock(Auction.class);
     this.sniperListener = mock(SniperListener.class);
-    this.sniper = new AuctionSniper(ITEM_ID, this.auction);
+    this.sniper = new AuctionSniper(new Item(ITEM_ID, 1100), this.auction);
     this.sniper.addSniperListener(this.sniperListener);
   }
 
@@ -62,16 +63,14 @@ class AuctionSniperTest {
     this.sniper.currentPrice(price, increment, PriceSource.FromOtherBidder);
 
     verify(this.auction).bid(bid);
-    verify(this.sniperListener, atLeastOnce()).sniperStateChanged(
-        new SniperSnapshot(ITEM_ID, price, bid, SniperState.BIDDING));
+    verify(this.sniperListener, atLeastOnce()).sniperStateChanged(aSniperThatIs(SniperState.BIDDING));
   }
 
   @Test
   void reportsIsWinningWhenCurrentPriceComesFromSniper() {
     this.sniper.currentPrice(123, 12, PriceSource.FromOtherBidder);
     this.sniper.currentPrice(135, 45, PriceSource.FromSniper);
-    verify(this.sniperListener).sniperStateChanged(
-        new SniperSnapshot(ITEM_ID, 135, 135, SniperState.WINNING));
+    verify(this.sniperListener).sniperStateChanged(aSniperThatIs(SniperState.WINNING));
   }
 
   @Test
@@ -79,9 +78,7 @@ class AuctionSniperTest {
     this.sniper.currentPrice(123, 45, PriceSource.FromSniper);
     this.sniper.auctionClosed();
 
-    final InOrder inOrder = inOrder(this.sniperListener);
-    inOrder.verify(this.sniperListener).sniperStateChanged(aSniperThatIs(SniperState.WON));
-    inOrder.verifyNoMoreInteractions();
+    verify(this.sniperListener).sniperStateChanged(aSniperThatIs(SniperState.WON));
   }
 
   @Test
@@ -101,12 +98,55 @@ class AuctionSniperTest {
     this.sniper.currentPrice(123, 45, PriceSource.FromSniper);
     this.sniper.currentPrice(168, 45, PriceSource.FromOtherBidder);
 
-    final InOrder inOrder = inOrder(this.sniperListener);
-    inOrder.verify(this.sniperListener).sniperStateChanged(aSniperThatIs(SniperState.BIDDING));
-    inOrder.verifyNoMoreInteractions();
+    verify(this.sniperListener).sniperStateChanged(aSniperThatIs(SniperState.BIDDING));
   }
 
-  private SniperSnapshot aSniperThatIs(final SniperState expected) {
+  @Test
+  void doesNotBidAndReportsLosingIfSubsequentPriceIsAboveStopPrice() {
+    this.sniper.currentPrice(123, 45, PriceSource.FromOtherBidder);
+    this.sniper.currentPrice(2345, 25, PriceSource.FromOtherBidder);
+
+    verify(this.sniperListener).sniperStateChanged(aSniperThatIs(SniperState.BIDDING));
+    verify(this.sniperListener).sniperStateChanged(aSniperThatIs(SniperState.LOSING));
+  }
+
+  @Test
+  void doesNotBidAndReportsLosingIfFirstPriceIsAboveStopPrice() {
+    this.sniper.currentPrice(2345, 25, PriceSource.FromOtherBidder);
+    verify(this.sniperListener).sniperStateChanged(aSniperThatIs(SniperState.LOSING));
+  }
+
+  @Test
+  void reportsLostIfAuctionClosesWhenLosing() {
+    this.sniper.currentPrice(2345, 25, PriceSource.FromOtherBidder);
+    this.sniper.auctionClosed();
+
+    verify(this.sniperListener).sniperStateChanged(aSniperThatIs(SniperState.LOSING));
+    verify(this.sniperListener).sniperStateChanged(aSniperThatIs(SniperState.LOST));
+  }
+
+  @Test
+  void continuesToBeLosingOnceStopPriceHasBeenReached() {
+    this.sniper.currentPrice(2345, 25, PriceSource.FromOtherBidder);
+    this.sniper.currentPrice(3456, 25, PriceSource.FromOtherBidder);
+
+    verify(this.sniperListener, times(2)).sniperStateChanged(aSniperThatIs(SniperState.LOSING));
+  }
+
+  @Test
+  void doesNotBidAndReportsLosingIfPriceAfterWinningIsAboveStopPrice() {
+    this.sniper.currentPrice(123, 12, PriceSource.FromOtherBidder);
+    this.sniper.currentPrice(135, 45, PriceSource.FromSniper);
+    this.sniper.currentPrice(2345, 25, PriceSource.FromOtherBidder);
+
+    verify(this.sniperListener).sniperStateChanged(aSniperThatIs(SniperState.BIDDING));
+    verify(this.sniperListener).sniperStateChanged(aSniperThatIs(SniperState.WINNING));
+    verify(this.sniperListener).sniperStateChanged(aSniperThatIs(SniperState.LOSING));
+
+  }
+
+  private SniperSnapshot aSniperThatIs(
+      final SniperState expected) {
     return argThat(new ArgumentMatcher<SniperSnapshot>() {
 
       @Override

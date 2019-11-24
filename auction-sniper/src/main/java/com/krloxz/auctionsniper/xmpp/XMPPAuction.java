@@ -6,6 +6,7 @@ import org.jivesoftware.smack.XMPPException;
 
 import com.krloxz.auctionsniper.domain.Auction;
 import com.krloxz.auctionsniper.domain.AuctionEventListener;
+import com.krloxz.auctionsniper.domain.Item;
 import com.krloxz.auctionsniper.util.Announcer;
 
 public class XMPPAuction implements Auction {
@@ -18,11 +19,11 @@ public class XMPPAuction implements Auction {
   public static final String BID_COMMAND_FORMAT = "SOLVersion: 1.1; Command: BID; Price: %d;";
   public static final String JOIN_COMMAND_FORMAT = "SOLVersion: 1.1; Command: JOIN;";
 
-  public XMPPAuction(final XMPPConnection connection, final String itemId) {
+  public XMPPAuction(final XMPPConnection connection, final Item item) {
     this.auctionEventListeners = Announcer.to(AuctionEventListener.class);
 
     this.chat = connection.getChatManager()
-        .createChat(auctionId(itemId, connection), null);
+        .createChat(auctionId(item.identifier, connection), null);
     this.chat.addMessageListener(
         new AuctionMessageTranslator(
             connection.getUser(),

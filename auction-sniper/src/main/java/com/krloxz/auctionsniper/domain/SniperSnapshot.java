@@ -37,6 +37,10 @@ public class SniperSnapshot {
     return new SniperSnapshot(this.itemId, newLastPrice, this.lastBid, SniperState.WINNING);
   }
 
+  public SniperSnapshot losing(final int newLastPrice) {
+    return new SniperSnapshot(this.itemId, newLastPrice, this.lastBid, SniperState.LOSING);
+  }
+
   public SniperSnapshot closed() {
     return new SniperSnapshot(this.itemId, this.lastPrice, this.lastBid, this.state.whenAuctionClosed());
   }
@@ -77,6 +81,12 @@ public class SniperSnapshot {
       @Override
       public SniperState whenAuctionClosed() {
         return WON;
+      }
+    },
+    LOSING {
+      @Override
+      public SniperState whenAuctionClosed() {
+        return LOST;
       }
     },
     LOST, WON;

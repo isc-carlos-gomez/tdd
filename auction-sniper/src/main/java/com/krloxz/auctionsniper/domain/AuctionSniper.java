@@ -8,15 +8,15 @@ import com.krloxz.auctionsniper.util.Announcer;
  */
 public class AuctionSniper implements AuctionEventListener {
 
-  private final String itemId;
+  private final Item item;
   private final Auction auction;
   private SniperSnapshot snapshot;
   private final Announcer<SniperListener> sniperListener;
 
-  public AuctionSniper(final String itemId, final Auction auction) {
-    this.itemId = itemId;
+  public AuctionSniper(final Item item, final Auction auction) {
+    this.item = item;
     this.auction = auction;
-    this.snapshot = SniperSnapshot.joining(itemId);
+    this.snapshot = SniperSnapshot.joining(item.identifier);
     this.sniperListener = new Announcer<>(SniperListener.class);
   }
 
@@ -34,8 +34,12 @@ public class AuctionSniper implements AuctionEventListener {
         break;
       case FromOtherBidder:
         final int bid = price + increment;
-        this.auction.bid(bid);
-        this.snapshot = this.snapshot.bidding(price, bid);
+        if (this.item.allowsBid(bid)) {
+          this.auction.bid(bid);
+          this.snapshot = this.snapshot.bidding(price, bid);
+        } else {
+          this.snapshot = this.snapshot.losing(price);
+        }
         break;
     }
     notifyChange();
@@ -50,7 +54,7 @@ public class AuctionSniper implements AuctionEventListener {
   }
 
   protected boolean isForItem(final String itemId) {
-    return this.itemId.equals(itemId);
+    return this.item.identifier.equals(itemId);
   }
 
   private void notifyChange() {

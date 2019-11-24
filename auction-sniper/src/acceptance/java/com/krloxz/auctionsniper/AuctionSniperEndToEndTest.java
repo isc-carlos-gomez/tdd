@@ -89,6 +89,28 @@ public class AuctionSniperEndToEndTest {
     this.application.showsSniperHasWonAuction(this.auction2, 521);
   }
 
+  @Test
+  public void sniperLosesAnAuctionWhenThePriceIsTooHigh() throws Exception {
+    this.auction.startSellingItem();
+
+    this.application.startBiddingWithStopPrice(this.auction, 1100);
+    this.auction.hasReceivedJoinRequestFrom(ApplicationRunner.SNIPER_XMPP_ID);
+
+    this.auction.reportPrice(1000, 98, "other bidder");
+    this.application.hasShownSniperIsBidding(this.auction, 1000, 1098);
+
+    this.auction.hasReceivedBid(1098, ApplicationRunner.SNIPER_XMPP_ID);
+
+    this.auction.reportPrice(1197, 10, "third party");
+    this.application.hasShownSniperIsLosing(this.auction, 1197, 1098);
+
+    this.auction.reportPrice(1207, 10, "fourth party");
+    this.application.hasShownSniperIsLosing(this.auction, 1207, 1098);
+
+    this.auction.announceClosed();
+    this.application.showsSniperHasLostAuction(this.auction, 1207, 1098);
+  }
+
   @AfterEach
   public void stopAuction() {
     this.auction.stop();

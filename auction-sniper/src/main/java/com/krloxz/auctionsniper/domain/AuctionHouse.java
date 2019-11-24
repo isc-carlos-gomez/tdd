@@ -11,10 +11,10 @@ public interface AuctionHouse {
   /**
    * Creates an auction for the given item.
    *
-   * @param itemId
-   *        item identifier
+   * @param item
+   *        the item
    * @return an auction for the given item
    */
-  Auction auctionFor(String itemId);
+  Auction auctionFor(Item item);
 
 }

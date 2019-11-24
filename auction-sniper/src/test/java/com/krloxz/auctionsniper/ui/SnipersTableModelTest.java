@@ -18,6 +18,7 @@ import org.mockito.ArgumentMatcher;
 
 import com.krloxz.auctionsniper.domain.Auction;
 import com.krloxz.auctionsniper.domain.AuctionSniper;
+import com.krloxz.auctionsniper.domain.Item;
 import com.krloxz.auctionsniper.domain.SniperSnapshot;
 import com.krloxz.auctionsniper.ui.SnipersTableModel.Column;
 import com.krloxz.auctionsniper.util.Defect;
@@ -114,7 +115,7 @@ class SnipersTableModelTest {
   }
 
   private AuctionSniper newSniper(final String itemId) {
-    return new AuctionSniper(itemId, mock(Auction.class));
+    return new AuctionSniper(new Item(itemId, 789), mock(Auction.class));
   }
 
   private TableModelEvent withAnUpdateAtRow(final int rowIndex) {

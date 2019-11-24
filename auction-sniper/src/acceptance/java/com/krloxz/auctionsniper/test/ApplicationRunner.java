@@ -21,8 +21,41 @@ public class ApplicationRunner {
 
     for (final FakeAuctionServer auction : auctions) {
       final String itemId = auction.getItemId();
-      this.driver.startBiddingFor(itemId);
+      this.driver.startBiddingFor(itemId, Integer.MAX_VALUE);
       this.driver.showsSniperState(SniperSnapshot.joining(itemId));
+    }
+  }
+
+  public void startBiddingWithStopPrice(final FakeAuctionServer auction, final int stopPrice) {
+    startSniper(auction);
+    final String itemId = auction.getItemId();
+    this.driver.startBiddingFor(itemId, stopPrice);
+    this.driver.showsSniperState(SniperSnapshot.joining(itemId));
+  }
+
+  public void hasShownSniperIsBidding(final FakeAuctionServer auction, final int lastPrice, final int lastBid) {
+    this.driver.showsSniperState(new SniperSnapshot(auction.getItemId(), lastPrice, lastBid, SniperState.BIDDING));
+  }
+
+  public void showsSniperHasLostAuction(final FakeAuctionServer auction, final int lastPrice, final int lastBid) {
+    this.driver.showsSniperState(new SniperSnapshot(auction.getItemId(), lastPrice, lastBid, SniperState.LOST));
+  }
+
+  public void hasShownSniperIsWinning(final FakeAuctionServer auction, final int winningBid) {
+    this.driver.showsSniperState(new SniperSnapshot(auction.getItemId(), winningBid, winningBid, SniperState.WINNING));
+  }
+
+  public void showsSniperHasWonAuction(final FakeAuctionServer auction, final int lastPrice) {
+    this.driver.showsSniperState(new SniperSnapshot(auction.getItemId(), lastPrice, lastPrice, SniperState.WON));
+  }
+
+  public void hasShownSniperIsLosing(final FakeAuctionServer auction, final int lastPrice, final int lastBid) {
+    this.driver.showsSniperState(new SniperSnapshot(auction.getItemId(), lastPrice, lastBid, SniperState.LOSING));
+  }
+
+  public void stop() {
+    if (this.driver != null) {
+      this.driver.dispose();
     }
   }
 
@@ -44,28 +77,6 @@ public class ApplicationRunner {
     this.driver = new AuctionSniperDriver(1000);
     this.driver.hasTitle(MainWindow.APPLICATION_TITLE);
     this.driver.hasColumnTitles();
-  }
-
-  public void hasShownSniperIsBidding(final FakeAuctionServer auction, final int lastPrice, final int lastBid) {
-    this.driver.showsSniperState(new SniperSnapshot(auction.getItemId(), lastPrice, lastBid, SniperState.BIDDING));
-  }
-
-  public void showsSniperHasLostAuction(final FakeAuctionServer auction, final int lastPrice, final int lastBid) {
-    this.driver.showsSniperState(new SniperSnapshot(auction.getItemId(), lastPrice, lastBid, SniperState.LOST));
-  }
-
-  public void hasShownSniperIsWinning(final FakeAuctionServer auction, final int winningBid) {
-    this.driver.showsSniperState(new SniperSnapshot(auction.getItemId(), winningBid, winningBid, SniperState.WINNING));
-  }
-
-  public void showsSniperHasWonAuction(final FakeAuctionServer auction, final int lastPrice) {
-    this.driver.showsSniperState(new SniperSnapshot(auction.getItemId(), lastPrice, lastPrice, SniperState.WON));
-  }
-
-  public void stop() {
-    if (this.driver != null) {
-      this.driver.dispose();
-    }
   }
 
   private static String[] arguments() {

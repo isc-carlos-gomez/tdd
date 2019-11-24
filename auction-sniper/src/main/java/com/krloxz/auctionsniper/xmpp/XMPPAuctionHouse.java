@@ -5,6 +5,7 @@ import org.jivesoftware.smack.XMPPException;
 
 import com.krloxz.auctionsniper.domain.Auction;
 import com.krloxz.auctionsniper.domain.AuctionHouse;
+import com.krloxz.auctionsniper.domain.Item;
 
 /**
  * Implementation of {@link AuctionHouse} that uses an XMPP Server to create auctions. Should be
@@ -45,8 +46,8 @@ public class XMPPAuctionHouse implements AuctionHouse {
   }
 
   @Override
-  public Auction auctionFor(final String itemId) {
-    return new XMPPAuction(this.connection, itemId);
+  public Auction auctionFor(final Item item) {
+    return new XMPPAuction(this.connection, item);
   }
 
   /**
