@@ -90,7 +90,7 @@ public class AuctionSniperEndToEndTest {
   }
 
   @Test
-  public void sniperLosesAnAuctionWhenThePriceIsTooHigh() throws Exception {
+  void sniperLosesAnAuctionWhenThePriceIsTooHigh() throws Exception {
     this.auction.startSellingItem();
 
     this.application.startBiddingWithStopPrice(this.auction, 1100);
@@ -109,6 +109,33 @@ public class AuctionSniperEndToEndTest {
 
     this.auction.announceClosed();
     this.application.showsSniperHasLostAuction(this.auction, 1207, 1098);
+  }
+
+  @Test
+  void sniperReportsInvalidAuctionMessageAndStopsRespondingToEvents() throws Exception {
+    final String brokenMessage = "a broken message";
+    this.auction.startSellingItem();
+    this.auction2.startSellingItem();
+
+    this.application.startBiddingIn(this.auction, this.auction2);
+    this.auction.hasReceivedJoinRequestFrom(ApplicationRunner.SNIPER_XMPP_ID);
+
+    this.auction.reportPrice(500, 20, "other bidder");
+    this.auction.hasReceivedBid(520, ApplicationRunner.SNIPER_XMPP_ID);
+
+    this.auction.sendInvalidMessageContaining(brokenMessage);
+    this.application.hasShownSniperFailed(this.auction);
+
+    this.auction.reportPrice(520, 21, "other bidder");
+    waitForAnotherAuctionEvent();
+    this.application.reportsInvalidMessage(this.auction, brokenMessage);
+    this.application.hasShownSniperFailed(this.auction);
+  }
+
+  private void waitForAnotherAuctionEvent() throws Exception {
+    this.auction2.hasReceivedJoinRequestFrom(ApplicationRunner.SNIPER_XMPP_ID);
+    this.auction2.reportPrice(600, 6, "other bidder");
+    this.application.hasShownSniperIsBidding(this.auction2, 600, 606);
   }
 
   @AfterEach

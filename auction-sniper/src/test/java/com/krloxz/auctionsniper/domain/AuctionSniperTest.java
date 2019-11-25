@@ -142,7 +142,15 @@ class AuctionSniperTest {
     verify(this.sniperListener).sniperStateChanged(aSniperThatIs(SniperState.BIDDING));
     verify(this.sniperListener).sniperStateChanged(aSniperThatIs(SniperState.WINNING));
     verify(this.sniperListener).sniperStateChanged(aSniperThatIs(SniperState.LOSING));
+  }
 
+  @Test
+  void reportsFailedIfAuctionFailsWhenBidding() {
+    this.sniper.currentPrice(123, 45, PriceSource.FromOtherBidder);
+    this.sniper.auctionFailed();
+
+    verify(this.sniperListener).sniperStateChanged(aSniperThatIs(SniperState.BIDDING));
+    verify(this.sniperListener).sniperStateChanged(aSniperThatIs(SniperState.FAILED));
   }
 
   private SniperSnapshot aSniperThatIs(

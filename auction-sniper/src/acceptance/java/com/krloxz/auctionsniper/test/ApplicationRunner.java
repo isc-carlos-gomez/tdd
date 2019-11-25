@@ -1,5 +1,10 @@
 package com.krloxz.auctionsniper.test;
 
+import static org.hamcrest.Matchers.containsString;
+
+import java.io.IOException;
+import java.util.stream.Stream;
+
 import com.krloxz.auctionsniper.Main;
 import com.krloxz.auctionsniper.domain.SniperSnapshot;
 import com.krloxz.auctionsniper.domain.SniperSnapshot.SniperState;
@@ -14,23 +19,19 @@ public class ApplicationRunner {
   public static final String SNIPER_PASSWORD = "sniper";
   public static final String SNIPER_XMPP_ID = "sniper@localhost/Auction";
   public static final String XMPP_HOSTNAME = "localhost";
-  private AuctionSniperDriver driver;
+
+  private final AuctionSniperDriver driver = new AuctionSniperDriver(1000);
+  private final AuctionLogDriver logDriver = new AuctionLogDriver();
 
   public void startBiddingIn(final FakeAuctionServer... auctions) {
     startSniper(auctions);
-
-    for (final FakeAuctionServer auction : auctions) {
-      final String itemId = auction.getItemId();
-      this.driver.startBiddingFor(itemId, Integer.MAX_VALUE);
-      this.driver.showsSniperState(SniperSnapshot.joining(itemId));
-    }
+    Stream.of(auctions)
+        .forEach(auction -> openBiddingFor(auction, Integer.MAX_VALUE));
   }
 
   public void startBiddingWithStopPrice(final FakeAuctionServer auction, final int stopPrice) {
     startSniper(auction);
-    final String itemId = auction.getItemId();
-    this.driver.startBiddingFor(itemId, stopPrice);
-    this.driver.showsSniperState(SniperSnapshot.joining(itemId));
+    openBiddingFor(auction, stopPrice);
   }
 
   public void hasShownSniperIsBidding(final FakeAuctionServer auction, final int lastPrice, final int lastBid) {
@@ -53,6 +54,14 @@ public class ApplicationRunner {
     this.driver.showsSniperState(new SniperSnapshot(auction.getItemId(), lastPrice, lastBid, SniperState.LOSING));
   }
 
+  public void hasShownSniperFailed(final FakeAuctionServer auction) {
+    this.driver.showsSniperState(new SniperSnapshot(auction.getItemId(), 0, 0, SniperState.FAILED));
+  }
+
+  public void reportsInvalidMessage(final FakeAuctionServer auction, final String message) throws IOException {
+    this.logDriver.hasEntry(containsString(message));
+  }
+
   public void stop() {
     if (this.driver != null) {
       this.driver.dispose();
@@ -60,6 +69,7 @@ public class ApplicationRunner {
   }
 
   private void startSniper(final FakeAuctionServer... auctions) {
+    this.logDriver.clearLog();
     final Thread thread = new Thread("Test Application") {
 
       @Override
@@ -74,7 +84,6 @@ public class ApplicationRunner {
     thread.setDaemon(true);
     thread.start();
 
-    this.driver = new AuctionSniperDriver(1000);
     this.driver.hasTitle(MainWindow.APPLICATION_TITLE);
     this.driver.hasColumnTitles();
   }
@@ -85,6 +94,12 @@ public class ApplicationRunner {
     arguments[1] = SNIPER_ID;
     arguments[2] = SNIPER_PASSWORD;
     return arguments;
+  }
+
+  private void openBiddingFor(final FakeAuctionServer auction, final int stopPrice) {
+    final String itemId = auction.getItemId();
+    this.driver.startBiddingFor(itemId, stopPrice);
+    this.driver.showsSniperState(SniperSnapshot.joining(itemId));
   }
 
 }

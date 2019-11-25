@@ -1,5 +1,9 @@
 package com.krloxz.auctionsniper.xmpp;
 
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 
@@ -17,11 +21,16 @@ import com.krloxz.auctionsniper.domain.Item;
  */
 public class XMPPAuctionHouse implements AuctionHouse {
 
+  public static final String LOG_FILE_NAME = "auction-sniper.log";
   protected static final String AUCTION_RESOURCE = "Auction";
+  private static final String LOGGER_NAME = "XMPPAuctionHouse";
+
   private final XMPPConnection connection;
+  private final XMPPFailureReporter failureReporter;
 
   private XMPPAuctionHouse(final XMPPConnection connection) {
     this.connection = connection;
+    this.failureReporter = new LoggingXMPPFailureReporter(makeLogger());
   }
 
   /**
@@ -47,7 +56,7 @@ public class XMPPAuctionHouse implements AuctionHouse {
 
   @Override
   public Auction auctionFor(final Item item) {
-    return new XMPPAuction(this.connection, item);
+    return new XMPPAuction(this.connection, item, this.failureReporter);
   }
 
   /**
@@ -55,6 +64,24 @@ public class XMPPAuctionHouse implements AuctionHouse {
    */
   public void disconnect() {
     this.connection.disconnect();
+  }
+
+  private Logger makeLogger() throws XMPPAuctionException {
+    final Logger logger = Logger.getLogger(LOGGER_NAME);
+    logger.setUseParentHandlers(false);
+    logger.addHandler(simpleFileHandler());
+    return logger;
+  }
+
+  private FileHandler simpleFileHandler() throws XMPPAuctionException {
+    try {
+      final FileHandler handler = new FileHandler(LOG_FILE_NAME);
+      handler.setFormatter(new SimpleFormatter());
+      return handler;
+    } catch (final Exception e) {
+      throw new XMPPAuctionException(
+          "Could not create logger FileHandler " + LOG_FILE_NAME, e);
+    }
   }
 
 }

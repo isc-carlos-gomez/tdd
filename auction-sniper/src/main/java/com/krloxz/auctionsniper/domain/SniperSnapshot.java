@@ -45,6 +45,10 @@ public class SniperSnapshot {
     return new SniperSnapshot(this.itemId, this.lastPrice, this.lastBid, this.state.whenAuctionClosed());
   }
 
+  public SniperSnapshot failed() {
+    return new SniperSnapshot(this.itemId, 0, 0, SniperState.FAILED);
+  }
+
   public boolean isForSameItemAs(final SniperSnapshot sniperSnapshot) {
     return this.itemId.equals(sniperSnapshot.itemId);
   }
@@ -89,7 +93,7 @@ public class SniperSnapshot {
         return LOST;
       }
     },
-    LOST, WON;
+    LOST, WON, FAILED;
 
     public SniperState whenAuctionClosed() {
       throw new Defect("Auction is already closed");

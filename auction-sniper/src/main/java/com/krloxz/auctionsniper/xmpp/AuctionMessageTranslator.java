@@ -12,17 +12,29 @@ import com.krloxz.auctionsniper.domain.AuctionEventListener.PriceSource;
 
 public class AuctionMessageTranslator implements MessageListener {
 
-  private final AuctionEventListener listener;
   private final String sniperId;
+  private final AuctionEventListener listener;
+  private final XMPPFailureReporter failureReporter;
 
-  public AuctionMessageTranslator(final String sniperId, final AuctionEventListener listener) {
+  public AuctionMessageTranslator(final String sniperId, final AuctionEventListener listener,
+      final XMPPFailureReporter failureReporter) {
     this.sniperId = sniperId;
     this.listener = listener;
+    this.failureReporter = failureReporter;
   }
 
   @Override
   public void processMessage(final Chat chat, final Message message) {
-    final AuctionEvent event = AuctionEvent.from(message.getBody());
+    try {
+      translate(message.getBody());
+    } catch (final Exception exception) {
+      this.failureReporter.cannotTranslateMessage(this.sniperId, message.getBody(), exception);
+      this.listener.auctionFailed();
+    }
+  }
+
+  private void translate(final String message) {
+    final AuctionEvent event = AuctionEvent.from(message);
     final String eventType = event.type();
     if ("CLOSE".equals(eventType)) {
       this.listener.auctionClosed();
@@ -61,7 +73,11 @@ public class AuctionMessageTranslator implements MessageListener {
     }
 
     private String get(final String fieldName) {
-      return this.fields.get(fieldName);
+      final String value = this.fields.get(fieldName);
+      if (null == value) {
+        throw new MissingValueException(fieldName);
+      }
+      return value;
     }
 
     private void addField(final String field) {
@@ -79,6 +95,16 @@ public class AuctionMessageTranslator implements MessageListener {
 
     static String[] fieldsIn(final String messageBody) {
       return messageBody.split(";");
+    }
+
+  }
+
+  private static class MissingValueException extends RuntimeException {
+
+    private static final long serialVersionUID = 1L;
+
+    public MissingValueException(final String message) {
+      super(message);
     }
 
   }

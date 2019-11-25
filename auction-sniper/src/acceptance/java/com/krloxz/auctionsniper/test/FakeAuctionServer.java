@@ -70,6 +70,10 @@ public class FakeAuctionServer {
     return this.itemId;
   }
 
+  public void sendInvalidMessageContaining(final String brokenMessage) throws XMPPException {
+    this.currentChat.sendMessage(brokenMessage);
+  }
+
   private void receivesAMessageMatching(final String sniperId, final Matcher<? super String> messageMatcher)
       throws InterruptedException {
     this.messageListener.receivesAMessage(messageMatcher);

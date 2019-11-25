@@ -29,6 +29,7 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:3.1.0'
 
     acceptanceImplementation 'com.googlecode.windowlicker:windowlicker-swing:r268'
+    acceptanceImplementation  'commons-io:commons-io:2.6'
 }
 
 def printTestResult = {desc, result ->
